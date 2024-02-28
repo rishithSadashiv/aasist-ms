@@ -272,6 +272,8 @@ class customDevNevalMS(Dataset):
         # fileVopIndices = [ int(a) for a in fileVopIndices ]
         path = str(self.base_dir / f"flac/{key}.flac")
         x = getFeatures(path, vops)
+        x = x.swapaxes(0, 1).reshape(x.shape[1], -1)
+        print(x.shape)
         # X_pad = pad(X, self.cut)
         # x_inp = Tensor(X_pad)
         x_inp = Tensor(x)

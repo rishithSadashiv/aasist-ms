@@ -120,11 +120,20 @@ trn_loader, dev_loader, eval_loader = get_loader(
 
 a, b = next(iter(trn_loader))
 
+
+
 print(a.shape)
 print(b.shape)
 
-import matplotlib.pyplot as plt
-plt.figure()
-plt.imshow(a[0].numpy())
+a = next(iter(dev_loader))
+print(a[0].shape, a[1][0])
+
+a = next(iter(eval_loader))
+print(a[0].shape, a[1][0])
+
+
+# import matplotlib.pyplot as plt
+# plt.figure()
+# plt.imshow(a[0].numpy())
 
 
