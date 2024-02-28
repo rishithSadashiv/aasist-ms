@@ -152,10 +152,10 @@ def repeat_padding(originalVops, n=10):
     return paddedVops
 
 def zero_padding(segment, n):
-    print(len(segment))
+    # print(len(segment))
     length = len(segment)
     result = np.zeros(n)
-    print(result.shape)
+    # print(result.shape)
     result[:length] = segment
     return result
 
@@ -168,12 +168,16 @@ def modulation_spectogram_from_wav(audio_data,fs):
     x = x / np.max(x)
     win_size_sec = 0.015 
     win_shft_sec = 0.005  
+    # print('before am analysis')
     stft_modulation_spectrogram = ama.strfft_modulation_spectrogram(x, fs, win_size = round(win_size_sec*fs), win_shift = round(win_shft_sec*fs), channel_names = ['Modulation Spectrogram'])
+    
     X_plot=ama.plot_modulation_spectrogram_data(stft_modulation_spectrogram, 0 , modf_range = np.array([0,20]), c_range =  np.array([-90, -50]))
+    # print('after xplot', X_plot.shape)
     return X_plot
 
 def load_data(segment, sr=8000):
     linear_spect = modulation_spectogram_from_wav(segment,sr)
+    # print('linear_spect')
     mag_T = linear_spect
 
     mu = np.mean(mag_T)
@@ -192,6 +196,7 @@ def getFeatures(path, vops):
         fileVopIndices = repeat_padding(fileVopIndices)
     else:
         fileVopIndices = fileVopIndices[:n]
+        
     for vopIndex in fileVopIndices:
         # print(vopIndex)
         startPoint = max(0, vopIndex - ms50)
@@ -201,11 +206,16 @@ def getFeatures(path, vops):
         # print(startPoint)
         # print(endPoint)
         segment100ms = audio[startPoint: endPoint]
+        # print(len(segment100ms))
         if((endPoint - startPoint) < 2*ms50):
             # print(endPoint - startPoint)
             segment100ms = zero_padding(segment100ms, 2*ms50)
         ms = load_data(segment100ms)
+        # print(ms.shape)
+        # print('feature extracted: ', ms.shape)
         features = np.concatenate((features, ms.reshape(1, 61, 10)), axis = 0)
+        # print(features.shape)
+    # print('features extracted:', features.shape)
     return features[1:, :]
 
 
@@ -232,6 +242,8 @@ class customTrainMS(Dataset):
         # fileVopIndices = [ int(a) for a in fileVopIndices ]
         path = str(self.base_dir / f"flac/{key}.flac")
         x = getFeatures(path, vops)
+        x = x.swapaxes(0, 1).reshape(x.shape[1], -1)
+        print(x.shape)
         # X_pad = pad_random(X, self.cut)
         # x_inp = Tensor(X_pad)
         x_inp = Tensor(x)
