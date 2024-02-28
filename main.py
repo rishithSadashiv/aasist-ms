@@ -27,6 +27,7 @@ from data_utils import (Dataset_ASVspoof2019_train,
                         genSpoof_list_vops, customTrainMS, customDevNevalMS)
 from evaluation import calculate_tDCF_EER
 from utils import create_optimizer, seed_worker, set_seed, str_to_bool
+import numpy as np
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 
@@ -81,8 +82,8 @@ def main(args: argparse.Namespace) -> None:
     # set device
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print("Device: {}".format(device))
-    if device == "cpu":
-        raise ValueError("GPU not detected!")
+    # if device == "cpu":
+    #     raise ValueError("GPU not detected!")
 
     # define model architecture
     model = get_model(model_config, device)
@@ -305,6 +306,7 @@ def produce_evaluation_file(
     fname_list = []
     score_list = []
     for batch_x, utt_id in data_loader:
+        batch_x = batch_x[:, np.newaxis, :, :]
         batch_x = batch_x.to(device)
         with torch.no_grad():
             _, batch_out = model(batch_x)
@@ -339,6 +341,8 @@ def train_epoch(
     weight = torch.FloatTensor([0.1, 0.9]).to(device)
     criterion = nn.CrossEntropyLoss(weight=weight)
     for batch_x, batch_y in trn_loader:
+        batch_x = batch_x[:, np.newaxis, :, :]
+        # print(batch_x.shape)
         batch_size = batch_x.size(0)
         num_total += batch_size
         ii += 1

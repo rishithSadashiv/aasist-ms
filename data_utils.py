@@ -216,7 +216,9 @@ def getFeatures(path, vops):
         features = np.concatenate((features, ms.reshape(1, 61, 10)), axis = 0)
         # print(features.shape)
     # print('features extracted:', features.shape)
-    return features[1:, :]
+    features = features[1:, :]
+    features = np.concatenate((features, features), axis=2)
+    return features
 
 
 class customTrainMS(Dataset):
@@ -243,7 +245,7 @@ class customTrainMS(Dataset):
         path = str(self.base_dir / f"flac/{key}.flac")
         x = getFeatures(path, vops)
         x = x.swapaxes(0, 1).reshape(x.shape[1], -1)
-        print(x.shape)
+        # print(x.shape)
         # X_pad = pad_random(X, self.cut)
         # x_inp = Tensor(X_pad)
         x_inp = Tensor(x)
@@ -273,7 +275,7 @@ class customDevNevalMS(Dataset):
         path = str(self.base_dir / f"flac/{key}.flac")
         x = getFeatures(path, vops)
         x = x.swapaxes(0, 1).reshape(x.shape[1], -1)
-        print(x.shape)
+        # print(x.shape)
         # X_pad = pad(X, self.cut)
         # x_inp = Tensor(X_pad)
         x_inp = Tensor(x)
