@@ -493,10 +493,10 @@ class Model(nn.Module):
 
         self.encoder = nn.Sequential(
             nn.Sequential(Residual_block(nb_filts=filts[1], first=True)),
-            nn.Sequential(Residual_block(nb_filts=filts[2])),
+            # nn.Sequential(Residual_block(nb_filts=filts[2])),
             nn.Sequential(Residual_block(nb_filts=filts[3])),
-            nn.Sequential(Residual_block(nb_filts=filts[4])),
-            nn.Sequential(Residual_block(nb_filts=filts[4])),
+            # nn.Sequential(Residual_block(nb_filts=filts[4])),
+            # nn.Sequential(Residual_block(nb_filts=filts[4])),
             nn.Sequential(Residual_block(nb_filts=filts[4])))
 
         self.pos_S = nn.Parameter(torch.randn(1, 61, filts[-1][-1]))
